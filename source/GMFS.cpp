@@ -1,13 +1,18 @@
 #include "GMFS.h"
 
 #include "filesystem.h"
-#include "GarrysMod/InterfacePointers.hpp"
+
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#undef min
+#undef max
 
 static IFileSystem* pFileSystem = nullptr;
 
 bool FileSystem::LoadFileSystem()
 {
-	pFileSystem = InterfacePointers::FileSystem();
+	HMODULE luaShared = GetModuleHandle("lua_shared.dll");
+	pFileSystem = reinterpret_cast<IFileSystem*>(GetProcAddress(luaShared, "g_pFullFileSystem"));
 	return pFileSystem == nullptr;
 }
 
