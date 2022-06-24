@@ -51,8 +51,10 @@ else ()
 	set(MSBUILD_FOLDER "x86_64/${MSBUILD_TARGET}")
 endif ()
 
+set(GMFS_LIBRARY ${PREMAKE_PROJECT_DIR}/${MSBUILD_FOLDER}/GMFS.lib)
+
 add_custom_command(
-	OUTPUT ${PREMAKE_PROJECT_DIR}/${MSBUILD_FOLDER}/GMFS.lib
+	OUTPUT ${GMFS_LIBRARY}
 	COMMAND msbuild ${PREMAKE_PROJECT_DIR}/GMFS.sln
 		-target:gmcl_GMFS
 		-property:Configuration=${MSBUILD_TARGET}
@@ -65,5 +67,5 @@ add_custom_command(
 
 add_custom_target(
 	GMFS ALL
-	DEPENDS ${PREMAKE_PROJECT_DIR}/${MSBUILD_FOLDER}/GMFS.lib
+	DEPENDS ${GMFS_LIBRARY}
 )
