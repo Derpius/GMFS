@@ -70,9 +70,6 @@ add_custom_target(
 	DEPENDS "${LIBRARY}"
 )
 
-set(GMCOMMON_LIBS "${PROJECT_SOURCE_DIR}/garrysmod_common/projects/${PREMAKE_PLATFORM}/${PREMAKE_TARGET}/${MSBUILD_FOLDER}")
-set(SCAN_LIBS "${PROJECT_SOURCE_DIR}/garrysmod_common/scanning/projects/${PREMAKE_PLATFORM}/${PREMAKE_TARGET}/${MSBUILD_FOLDER}")
-
 set(SRCMIN_LIBS "${PROJECT_SOURCE_DIR}/garrysmod_common/sourcesdk-minimal/projects/${PREMAKE_PLATFORM}/${PREMAKE_TARGET}/${MSBUILD_FOLDER}")
 if ("${ARCHITECTURE}" STREQUAL "x86")
 	set(SRCMIN_PRECOMP_LIBS "${PROJECT_SOURCE_DIR}/garrysmod_common/sourcesdk-minimal/lib/public")
@@ -87,14 +84,9 @@ set(
 
 	"${LIBRARY}"
 
-	"${GMCOMMON_LIBS}/helpers.lib"
-	"${GMCOMMON_LIBS}/helpers_extended.lib"
-	
 	"${SRCMIN_PRECOMP_LIBS}/tier0.lib"
 	"${SRCMIN_PRECOMP_LIBS}/vstdlib.lib"
 	"${SRCMIN_LIBS}/tier1.lib"
-
-	"${SCAN_LIBS}/scanning.lib"
 
 	PARENT_SCOPE
 )
