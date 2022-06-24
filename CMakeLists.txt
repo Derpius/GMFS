@@ -39,22 +39,22 @@ else ()
 	message(FATAL_ERROR "Unsupported CMake build type: ${CMAKE_BUILD_TYPE}")
 endif ()
 
-if ("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x86")
+if ("${ARCHITECTURE}" STREQUAL "x86")
 	set(MSBUILD_PLATFORM "Win32")
 	set(MSBUILD_FOLDER "x86/${MSBUILD_TARGET}")
-elseif ("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x64")
+elseif ("${ARCHITECTURE}" STREQUAL "x64")
 	set(MSBUILD_PLATFORM "x64")
 	set(MSBUILD_FOLDER "x86_64/${MSBUILD_TARGET}")
 else ()
-	message(WARNING "Unsupported CMake generator platform '${CMAKE_GENERATOR_PLATFORM}', defaulting to x64")
+	message(WARNING "ARCHITECTURE cache variable not set to a valid value (x86, x64), defaulting to x64")
 	set(MSBUILD_PLATFORM "x64")
 	set(MSBUILD_FOLDER "x86_64/${MSBUILD_TARGET}")
 endif ()
 
-set(GMFS_LIBRARY ${PREMAKE_PROJECT_DIR}/${MSBUILD_FOLDER}/GMFS.lib PARENT_SCOPE)
+set(LIBRARY "${PREMAKE_PROJECT_DIR}/${MSBUILD_FOLDER}/GMFS.lib")
 
 add_custom_command(
-	OUTPUT ${GMFS_LIBRARY}
+	OUTPUT "${LIBRARY}"
 	COMMAND msbuild ${PREMAKE_PROJECT_DIR}/GMFS.sln
 		-target:gmcl_GMFS
 		-property:Configuration=${MSBUILD_TARGET}
@@ -67,5 +67,34 @@ add_custom_command(
 
 add_custom_target(
 	GMFS ALL
-	DEPENDS ${GMFS_LIBRARY}
+	DEPENDS "${LIBRARY}"
+)
+
+set(GMCOMMON_LIBS "${PROJECT_SOURCE_DIR}/garrysmod_common/projects/${PREMAKE_PLATFORM}/${PREMAKE_TARGET}/${MSBUILD_FOLDER}")
+set(SCAN_LIBS "${PROJECT_SOURCE_DIR}/garrysmod_common/scanning/projects/${PREMAKE_PLATFORM}/${PREMAKE_TARGET}/${MSBUILD_FOLDER}")
+
+set(SRCMIN_LIBS "${PROJECT_SOURCE_DIR}/garrysmod_common/sourcesdk-minimal/projects/${PREMAKE_PLATFORM}/${PREMAKE_TARGET}/${MSBUILD_FOLDER}")
+if ("${ARCHITECTURE}" STREQUAL "x86")
+	set(SRCMIN_PRECOMP_LIBS "${PROJECT_SOURCE_DIR}/garrysmod_common/sourcesdk-minimal/lib/public")
+elseif ("${ARCHITECTURE}" STREQUAL "x64")
+	set(SRCMIN_PRECOMP_LIBS "${PROJECT_SOURCE_DIR}/garrysmod_common/sourcesdk-minimal/lib/public/x64")
+else ()
+	set(SRCMIN_PRECOMP_LIBS "${PROJECT_SOURCE_DIR}/garrysmod_common/sourcesdk-minimal/lib/public/x64")
+endif ()
+
+set(
+	GMFS_LIBS
+
+	"${LIBRARY}"
+
+	"${GMCOMMON_LIBS}/helpers.lib"
+	"${GMCOMMON_LIBS}/helpers_extended.lib"
+	
+	"${SRCMIN_PRECOMP_LIBS}/tier0.lib"
+	"${SRCMIN_PRECOMP_LIBS}/vstdlib.lib"
+	"${SRCMIN_LIBS}/tier1.lib"
+
+	"${SCAN_LIBS}/scanning.lib"
+
+	PARENT_SCOPE
 )
