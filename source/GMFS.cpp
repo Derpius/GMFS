@@ -11,9 +11,9 @@ static IFileSystem* pFileSystem = nullptr;
 
 bool FileSystem::LoadFileSystem()
 {
-	HMODULE luaShared = GetModuleHandle("lua_shared.dll");
-	pFileSystem = reinterpret_cast<IFileSystem*>(GetProcAddress(luaShared, "g_pFullFileSystem"));
-	return pFileSystem == nullptr;
+	HMODULE filesystem = GetModuleHandle("filesystem_stdio.dll");
+	pFileSystem = reinterpret_cast<IFileSystem*>(GetProcAddress(filesystem, "g_pFullFileSystem"));
+	return pFileSystem != nullptr;
 }
 
 bool FileSystem::Exists(const char* file, const char* path)
