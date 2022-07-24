@@ -9,17 +9,20 @@
 
 static IFileSystem* pFileSystem = nullptr;
 
-bool FileSystem::LoadFileSystem()
+FILESYSTEM_STATUS FileSystem::LoadFileSystem()
 {
+	HMODULE filesystem = GetModuleHandle(TEXT("filesystem_stdio.dll"));
+	if (filesystem == nullptr) return FILESYSTEM_STATUS::MODULELOAD_FAILED;
+
 	CreateInterfaceFn createInterface = reinterpret_cast<CreateInterfaceFn>(GetProcAddress(
-		GetModuleHandle("filesystem_stdio.dll"),
+		filesystem,
 		"CreateInterface"
 	));
-	if (createInterface == nullptr) return false;
+	if (createInterface == nullptr) return FILESYSTEM_STATUS::GETPROCADDR_FAILED;
 
 	int retcode;
 	pFileSystem = static_cast<IFileSystem*>(createInterface("IFileSystem", &retcode));
-	return retcode == IFACE_OK && pFileSystem != nullptr;
+	return (retcode == IFACE_OK && pFileSystem != nullptr) ? FILESYSTEM_STATUS::OK : FILESYSTEM_STATUS::CREATEINTERFACE_FAILED;
 }
 
 bool FileSystem::Exists(const char* file, const char* path)

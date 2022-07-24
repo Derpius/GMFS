@@ -4,9 +4,17 @@
 
 typedef void* FileHandle_t;
 
+enum class FILESYSTEM_STATUS
+{
+	OK,
+	MODULELOAD_FAILED,
+	GETPROCADDR_FAILED,
+	CREATEINTERFACE_FAILED
+};
+
 namespace FileSystem
 {
-	bool LoadFileSystem();
+	FILESYSTEM_STATUS LoadFileSystem();
 
 	bool Exists(const char* file, const char* path = nullptr);
 	FileHandle_t Open(const char* file, const char* mode, const char* path = nullptr);
