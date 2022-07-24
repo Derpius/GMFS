@@ -11,9 +11,15 @@ static IFileSystem* pFileSystem = nullptr;
 
 bool FileSystem::LoadFileSystem()
 {
-	HMODULE filesystem = GetModuleHandle("filesystem_stdio.dll");
-	pFileSystem = reinterpret_cast<IFileSystem*>(GetProcAddress(filesystem, "g_pFullFileSystem"));
-	return pFileSystem != nullptr;
+	CreateInterfaceFn createInterface = reinterpret_cast<CreateInterfaceFn>(GetProcAddress(
+		GetModuleHandle("filesystem_stdio.dll"),
+		"CreateInterface"
+	));
+	if (createInterface == nullptr) return false;
+
+	int retcode;
+	pFileSystem = static_cast<IFileSystem*>(createInterface("IFileSystem", &retcode));
+	return retcode == IFACE_OK && pFileSystem != nullptr;
 }
 
 bool FileSystem::Exists(const char* file, const char* path)
