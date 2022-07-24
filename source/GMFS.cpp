@@ -21,7 +21,7 @@ FILESYSTEM_STATUS FileSystem::LoadFileSystem()
 	if (createInterface == nullptr) return FILESYSTEM_STATUS::GETPROCADDR_FAILED;
 
 	int retcode;
-	pFileSystem = static_cast<IFileSystem*>(createInterface("IFileSystem", &retcode));
+	pFileSystem = static_cast<IFileSystem*>(createInterface("VFileSystem022", &retcode));
 	return (retcode == IFACE_OK && pFileSystem != nullptr) ? FILESYSTEM_STATUS::OK : FILESYSTEM_STATUS::CREATEINTERFACE_FAILED;
 }
 
