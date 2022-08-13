@@ -1,9 +1,15 @@
 #include "GMFS.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#undef min
-#undef max
+#if defined(WIN32)
+	#define WIN32_LEAN_AND_MEAN
+	#include <Windows.h>
+	#undef min
+	#undef max
+#elif defined(__linux__)
+	#include <dlfcn.h>
+#else
+#error Target operating system not supported
+#endif
 
 #include <cstdio>
 
@@ -57,6 +63,7 @@ public:
 
 static IBaseFileSystem* pFileSystem = nullptr;
 
+#if defined(WIN32)
 FILESYSTEM_STATUS FileSystem::LoadFileSystem()
 {
 	HMODULE filesystem = GetModuleHandle(TEXT("filesystem_stdio.dll"));
@@ -72,6 +79,23 @@ FILESYSTEM_STATUS FileSystem::LoadFileSystem()
 	pFileSystem = static_cast<IBaseFileSystem*>(createInterface("VBaseFileSystem011", &retcode));
 	return (retcode == IFACE_OK && pFileSystem != nullptr) ? FILESYSTEM_STATUS::OK : FILESYSTEM_STATUS::CREATEINTERFACE_FAILED;
 }
+#elif defined(__linux__)
+FILESYSTEM_STATUS FileSystem::LoadFileSystem()
+{
+	void* filesystem = dlopen("filesystem_stdio.so", RTLD_NOLOAD);
+	if (filesystem == nullptr) return FILESYSTEM_STATUS::MODULELOAD_FAILED;
+
+	CreateInterfaceFn createInterface = reinterpret_cast<CreateInterfaceFn>(dlsym(
+		filesystem,
+		"CreateInterface"
+	));
+	if (createInterface == nullptr) return FILESYSTEM_STATUS::GETPROCADDR_FAILED;
+
+	int retcode;
+	pFileSystem = static_cast<IBaseFileSystem*>(createInterface("VBaseFileSystem011", &retcode));
+	return (retcode == IFACE_OK && pFileSystem != nullptr) ? FILESYSTEM_STATUS::OK : FILESYSTEM_STATUS::CREATEINTERFACE_FAILED;
+}
+#endif
 
 bool FileSystem::Exists(const char* file, const char* path)
 {
