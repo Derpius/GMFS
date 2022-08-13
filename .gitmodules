@@ -1,4 +1,0 @@
-[submodule "garrysmod_common"]
-	path = garrysmod_common
-	url = https://github.com/danielga/garrysmod_common.git
-	branch = x86-64-support-sourcesdk
