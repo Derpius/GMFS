@@ -115,10 +115,16 @@ uint32_t FileSystem::Size(FileHandle_t pFile)
 	return pFileSystem->Size(pFile);
 }
 
-void FileSystem::Read(uint8_t* pData, uint32_t bytes, FileHandle_t pFile)
+int FileSystem::Read(uint8_t* pData, uint32_t bytes, FileHandle_t pFile)
 {
-	if (pFileSystem == nullptr) return;
-	pFileSystem->Read(pData, bytes, pFile);
+	if (pFileSystem == nullptr) return 0;
+	return pFileSystem->Read(pData, bytes, pFile);
+}
+
+int FileSystem::Write(const uint8_t* pData, uint32_t bytes, FileHandle_t pFile)
+{
+	if (pFileSystem == nullptr) return 0;
+	return pFileSystem->Write(pData, bytes, pFile);
 }
 
 void FileSystem::Close(FileHandle_t pFile)

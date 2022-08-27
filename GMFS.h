@@ -20,6 +20,7 @@ namespace FileSystem
 	FileHandle_t Open(const char* file, const char* mode, const char* path = nullptr);
 
 	uint32_t Size(FileHandle_t pFile);
-	void Read(uint8_t* pData, uint32_t bytes, FileHandle_t pFile);
+	int Read(uint8_t* pData, uint32_t bytes, FileHandle_t pFile);
+	int Write(const uint8_t* pData, uint32_t bytes, FileHandle_t pFile);
 	void Close(FileHandle_t pFile);
 };
