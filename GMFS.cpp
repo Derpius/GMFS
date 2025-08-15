@@ -82,7 +82,7 @@ FILESYSTEM_STATUS FileSystem::LoadFileSystem()
 #elif defined(__linux__)
 FILESYSTEM_STATUS FileSystem::LoadFileSystem()
 {
-	void* filesystem = dlopen("filesystem_stdio.so", RTLD_NOLOAD);
+	void* filesystem = dlopen("filesystem_stdio_client.so", RTLD_NOW | RTLD_NOLOAD);
 	if (filesystem == nullptr) return FILESYSTEM_STATUS::MODULELOAD_FAILED;
 
 	CreateInterfaceFn createInterface = reinterpret_cast<CreateInterfaceFn>(dlsym(
